@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
+    <ProjectReference Include="..\..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
     <ProjectReference Include="..\Directory.Domain\Directory.Domain.csproj" />
   </ItemGroup>
 

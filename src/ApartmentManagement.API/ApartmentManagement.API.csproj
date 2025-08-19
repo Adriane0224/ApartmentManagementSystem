@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
     <ProjectReference Include="..\Directory\Directory.Application\Directory.Application.csproj" />
     <ProjectReference Include="..\Directory\Directory.Controllers\Directory.Controllers.csproj" />
     <ProjectReference Include="..\Directory\Directory.Infrastructure\Directory.Infrastructure.csproj" />

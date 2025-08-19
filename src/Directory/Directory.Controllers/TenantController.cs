@@ -1,6 +1,5 @@
 ﻿using Directory.Application.Commands;
 using Directory.Controllers.Request;
-using Directory.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Directory.Controllers
