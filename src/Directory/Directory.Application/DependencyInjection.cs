@@ -8,7 +8,6 @@ namespace Directory.Application
         public static IServiceCollection AddDirectoryApplication(this IServiceCollection services)
         {
             services.AddScoped<ITenantCommand, TenantCommand>();
-
             return services;
         }
     }

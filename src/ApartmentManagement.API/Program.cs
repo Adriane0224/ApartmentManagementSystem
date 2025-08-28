@@ -1,10 +1,10 @@
 using ApartmentManagement.Contracts.Services;
 using Directory.Application;
 using Directory.Infrastructure;
+using Directory.Infrastructure.MappingProfiles;
 using Leasing.Application;
 using Leasing.Infrastructure;
 using Leasing.Infrastructure.MappingProfiles;
-using MediatR;
 using Property.Application;
 using Property.Infrastructure;
 using Property.Infrastructure.MappingProfiles;
@@ -35,6 +35,7 @@ builder.Services.AddAutoMapper(cfg =>
 {
    cfg.AddMaps(typeof(ApartmentMappingProfile).Assembly);
     cfg.AddMaps(typeof(LeaseMappingProfile).Assembly);
+    cfg.AddMaps(typeof(TenantMappingProfile).Assembly);
 });
 
 //Directory

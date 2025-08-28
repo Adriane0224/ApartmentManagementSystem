@@ -1,7 +1,9 @@
 ﻿using ApartmentManagement.Contracts.Services;
+using Directory.Application.Queries;            // 👈 interface
 using Directory.Domain.Repositories;
 using Directory.Infrastructure.Data;
 using Directory.Infrastructure.Data.Repositories;
+using Directory.Infrastructure.QueryHandlers; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,15 +20,17 @@ namespace Directory.Infrastructure
 
             if (!string.IsNullOrWhiteSpace(cs))
             {
-                // SQL Server like your Identity module; separate schema for migrations history
                 services.AddDbContext<DirectoryDbContext>(o =>
                     o.UseSqlServer(cs, sql => sql.MigrationsHistoryTable("_EFMigrationsHistory", "Directory")));
             }
 
-            // Repositories
+            // Repositories 
             services.AddScoped<ITenantRepository, TenantRepository>();
 
-            // Domain event publisher 
+            // Queries 
+            services.AddScoped<ITenantQueries, TenantQueries>();
+
+            // Domain event 
             services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
 
             return services;

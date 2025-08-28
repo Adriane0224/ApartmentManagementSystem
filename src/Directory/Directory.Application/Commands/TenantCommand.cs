@@ -16,7 +16,7 @@ namespace Directory.Application.Commands
             _publisher = publisher;
         }
 
-        public async Task<TenantRegistrationResponse> RegisterAsync(string name, string email, string? phone)
+        public async Task<TenantRegistrationResponse> RegisterAsync(string name, string email, string? phone, CancellationToken cancellationToken)
         {
             // Check if tenant already exists by email
             var existing = await _tenantRepository.GetByEmailAsync(email);

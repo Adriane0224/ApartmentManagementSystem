@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Leasing.Application.Queries;
 using Leasing.Application.Response;
 using Leasing.Domain.Entities;
+using Leasing.Domain.ValueObject;
 using Leasing.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ namespace Leasing.Infrastructure.QueryHandlers
 
         public Task<LeaseResponse?> GetByIdAsync(Guid id, CancellationToken ct)
             => _db.Leases.AsNoTracking()
-                .Where(l => l.Id.Value == id)
+                 .Where(l => l.Id == new LeaseId(id))
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(ct);
 

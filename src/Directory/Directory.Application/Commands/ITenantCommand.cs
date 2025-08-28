@@ -4,7 +4,9 @@ namespace Directory.Application.Commands
 {
     public interface ITenantCommand
     {
-        Task<TenantRegistrationResponse> RegisterAsync(string name, string email, string? phoone);
+        Task<TenantRegistrationResponse> RegisterAsync(string name, string email, string? phoone, CancellationToken cancellationToken);
+
+
 
     }
 }

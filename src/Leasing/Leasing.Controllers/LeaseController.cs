@@ -1,4 +1,5 @@
 ﻿using Leasing.Application.Queries;
+using Leasing.Application.Request;
 using Leasing.Controllers.Request;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -25,21 +26,27 @@ namespace Leasing.Controllers
                 : CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
         {
             var lease = await _queries.GetByIdAsync(id, ct);
             return lease is null ? NotFound() : Ok(lease);
         }
 
-        [HttpPost("{id:guid}/terminate")]
-        public async Task<IActionResult> Terminate(Guid id, [FromBody] DateOnly terminationDate, CancellationToken ct)
+        //[HttpPost("terminate/{id}")]
+        //public async Task<IActionResult> Terminate(Guid id, [FromBody] DateOnly terminationDate, CancellationToken ct)
+        //{
+        //    var result = await _mediator.Send(new TerminateLeaseCommand(id, terminationDate), ct);
+        //    return result.IsFailed ? BadRequest(result.Errors.First().Message) : NoContent();
+        //}
+        [HttpPost("terminate/{id:guid}")]
+        public async Task<IActionResult> Terminate(Guid id, [FromBody] TerminateLeaseRequest request, CancellationToken ct)
         {
-            var result = await _mediator.Send(new TerminateLeaseCommand(id, terminationDate), ct);
+            var result = await _mediator.Send(new TerminateLeaseCommand(id, request.TerminationDate), ct);
             return result.IsFailed ? BadRequest(result.Errors.First().Message) : NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetActive([FromQuery] Guid? apartmentId, CancellationToken ct)
         {
             var leases = apartmentId.HasValue
