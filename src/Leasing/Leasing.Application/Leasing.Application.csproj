@@ -10,12 +10,12 @@
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="FluentResults" Version="4.0.0" />
     <PackageReference Include="MediatR" Version="13.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
-    <ProjectReference Include="..\Property.Domain\Property.Domain.csproj" />
+    <ProjectReference Include="..\Leasing.Domain\Leasing.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -41,6 +41,7 @@ namespace Directory.Application.Commands
             {
                 IsSuccess = true,
                 Message = "Tenant registered successfully.",
+                TenantId = tenant.Id.Value
             };
         }
     }

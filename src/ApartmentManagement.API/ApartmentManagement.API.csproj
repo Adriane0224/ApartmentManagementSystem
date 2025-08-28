@@ -8,8 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="FluentResults" Version="4.0.0" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -17,9 +26,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Directory\Directory.Application\Directory.Application.csproj" />
+    <ProjectReference Include="..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
+    <ProjectReference Include="..\ApartmentManagement.SharedKernel\ApartmentManagement.SharedKernel.csproj" />
     <ProjectReference Include="..\Directory\Directory.Controllers\Directory.Controllers.csproj" />
     <ProjectReference Include="..\Directory\Directory.Infrastructure\Directory.Infrastructure.csproj" />
+    <ProjectReference Include="..\Leasing\Leasing.Application\Leasing.Application.csproj" />
+    <ProjectReference Include="..\Leasing\Leasing.Controllers\Leasing.Controllers.csproj" />
+    <ProjectReference Include="..\Leasing\Leasing.Infrastructure\Leasing.Infrastructure.csproj" />
+    <ProjectReference Include="..\Property\Property.Controller\Property.Controller.csproj" />
+    <ProjectReference Include="..\Property\Property.Infrastructure\Property.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

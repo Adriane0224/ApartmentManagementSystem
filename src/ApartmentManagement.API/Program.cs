@@ -1,8 +1,14 @@
 using ApartmentManagement.Contracts.Services;
-using Directory.Infrastructure;
-using Scalar.AspNetCore;
 using Directory.Application;
+using Directory.Infrastructure;
+using Leasing.Application;
+using Leasing.Infrastructure;
+using Leasing.Infrastructure.MappingProfiles;
 using MediatR;
+using Property.Application;
+using Property.Infrastructure;
+using Property.Infrastructure.MappingProfiles;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +19,23 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(Directory.Application.AssemblyReference).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Leasing.Application.AssemblyReference).Assembly);
+    //cfg.RegisterServicesFromAssembly(typeof(Property.Application.AssemblyReference).Assembly);
 });
 
+//Leasing
+builder.Services.AddLeasingApplication();
+builder.Services.AddLeasingInfrastructure(builder.Configuration);
+
+//Property
+builder.Services.AddApartmentApplication();
+builder.Services.AddApartmentInfrastructure(builder.Configuration);
+
+builder.Services.AddAutoMapper(cfg =>
+{
+   cfg.AddMaps(typeof(ApartmentMappingProfile).Assembly);
+    cfg.AddMaps(typeof(LeaseMappingProfile).Assembly);
+});
 
 //Directory
 builder.Services.AddDirectoryApplication();
