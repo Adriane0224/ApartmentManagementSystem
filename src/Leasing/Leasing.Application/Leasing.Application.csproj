@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
     <ProjectReference Include="..\Leasing.Domain\Leasing.Domain.csproj" />
+    <ProjectReference Include="..\Leasing.IntegrationEvent\Leasing.IntegrationEvent.csproj" />
   </ItemGroup>
 
 </Project>

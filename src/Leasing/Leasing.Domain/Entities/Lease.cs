@@ -1,12 +1,14 @@
-﻿using Leasing.Domain.ValueObject;
+﻿using ApartmentManagement.SharedKernel.Entities;
+using Leasing.Domain.DomainEvents;
+using Leasing.Domain.ValueObject;
 
 namespace Leasing.Domain.Entities
 {
-    public class Lease
+    public class Lease : Entity
     {
         public LeaseId Id { get; private set; }
         public Guid ApartmentId { get; private set; }
-        public Guid TenantId { get; private set; } 
+        public Guid TenantId { get; private set; }
         public DateOnly StartDate { get; private set; }
         public DateOnly EndDate { get; private set; }
         public decimal MonthlyRent { get; private set; }
@@ -24,7 +26,7 @@ namespace Leasing.Domain.Entities
             if (end <= start) throw new ArgumentException("End date must be after start date.");
             if (monthlyRent <= 0) throw new ArgumentException("Monthly rent must be positive.");
 
-            return new Lease
+            var lease = new Lease
             {
                 Id = new LeaseId(Guid.NewGuid()),
                 ApartmentId = apartmentId,
@@ -35,6 +37,14 @@ namespace Leasing.Domain.Entities
                 SecurityDeposit = deposit,
                 Status = LeaseStatus.Active
             };
+
+            lease.RaiseDomainEvent(new LeaseActivatedEvent(
+                lease.Id.Value,
+                lease.ApartmentId,
+                lease.StartDate,
+                lease.EndDate));
+
+            return lease;
         }
 
         public void Terminate(DateOnly terminationDate)
@@ -42,6 +52,8 @@ namespace Leasing.Domain.Entities
             if (Status == LeaseStatus.Terminated) return;
             if (terminationDate < StartDate) throw new ArgumentException("Termination cannot be before start.");
             Status = LeaseStatus.Terminated;
+
+            // (optional) raise LeaseTerminatedEvent to free the unit
         }
     }
 }

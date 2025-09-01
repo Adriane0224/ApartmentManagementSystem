@@ -1,32 +1,40 @@
-﻿using ApartmentManagement.Contracts.Services; // ensure LeaseActivatedEvent : INotification
+﻿using ApartmentManagement.Contracts.Services;
 using MediatR;
 using Property.Domain.Repositories;
 using Property.Domain.Services;
 using Property.Domain.ValueObject;
-using System.Threading;
-using System.Threading.Tasks;
 
-public class LeaseActivatedEventHandler : INotificationHandler<LeaseActivatedEvent>
+namespace Property.Application.CommandHandler
 {
-    private readonly IApartmentRepository _apartmentRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public LeaseActivatedEventHandler(IApartmentRepository apartmentRepository, IUnitOfWork unitOfWork)
+    public sealed class LeaseActivatedEventHandler
+        : INotificationHandler<LeaseActivatedIntegrationEvent>
     {
-        _apartmentRepository = apartmentRepository;
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IApartmentRepository _apartmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-    public async Task Handle(LeaseActivatedEvent notification, CancellationToken cancellationToken)
-    {
-        // Prefer a *tracking* read if your repo supports it
-        var apartment = await _apartmentRepository.GetByIdForUpdateAsync(
-            new ApartmentId(notification.ApartmentId), cancellationToken); 
-        if (apartment is null) return;
+        public LeaseActivatedEventHandler(
+            IApartmentRepository apartmentRepository,
+            IUnitOfWork unitOfWork)
+        {
+            _apartmentRepository = apartmentRepository;
+            _unitOfWork = unitOfWork;
+        }
 
-        var service = new ApartmentStatusService();
-        var occupied = service.Occupy(apartment);          
-        await _apartmentRepository.UpdateAsync(occupied); 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        public async Task Handle(
+            LeaseActivatedIntegrationEvent notification,
+            CancellationToken cancellationToken)
+        {
+            var apartment = await _apartmentRepository.GetByIdForUpdateAsync(
+                new ApartmentId(notification.ApartmentUnitId),
+                cancellationToken);
+
+            if (apartment is null) return;
+
+            var service = new ApartmentStatusService();
+            var occupied = service.Occupy(apartment);
+
+            await _apartmentRepository.UpdateAsync(occupied);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
     }
 }

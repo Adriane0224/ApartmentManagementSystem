@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leasing.Infrastructure", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leasing.Controllers", "src\Leasing\Leasing.Controllers\Leasing.Controllers.csproj", "{238263DA-CC4B-4CD9-BA9F-F7752E23C2D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leasing.IntegrationEvent", "src\Leasing\Leasing.IntegrationEvent\Leasing.IntegrationEvent.csproj", "{D4FC6755-0682-46A1-8150-BBF39847B97C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{238263DA-CC4B-4CD9-BA9F-F7752E23C2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{238263DA-CC4B-4CD9-BA9F-F7752E23C2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{238263DA-CC4B-4CD9-BA9F-F7752E23C2D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FC6755-0682-46A1-8150-BBF39847B97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FC6755-0682-46A1-8150-BBF39847B97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FC6755-0682-46A1-8150-BBF39847B97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FC6755-0682-46A1-8150-BBF39847B97C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +136,7 @@ Global
 		{A88E9279-2179-4133-83C0-2BC0798600A4} = {3303E5FB-0DDC-4474-B91F-15F5AA40CE50}
 		{09DF50B9-17AE-4BCF-B2F6-A701D160FD0E} = {3303E5FB-0DDC-4474-B91F-15F5AA40CE50}
 		{238263DA-CC4B-4CD9-BA9F-F7752E23C2D9} = {3303E5FB-0DDC-4474-B91F-15F5AA40CE50}
+		{D4FC6755-0682-46A1-8150-BBF39847B97C} = {3303E5FB-0DDC-4474-B91F-15F5AA40CE50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C9854DC-E7B1-40A9-9A91-0BCCBB9C2870}

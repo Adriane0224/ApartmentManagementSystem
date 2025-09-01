@@ -22,7 +22,7 @@ namespace Leasing.Application.CommandHandler
         private readonly ILeaseRepository _leases;
         private readonly IMapper _mapper;
 
-        private readonly IApartmentReadPort? _apartments; 
+        private readonly IApartmentReadPort? _apartments;
         private readonly ITenantReadPort? _tenants;
         private readonly IEventBus _eventBus;
 
@@ -34,7 +34,7 @@ namespace Leasing.Application.CommandHandler
             IApartmentReadPort? apartments = null,
             ITenantReadPort? tenants = null)
         {
-            _unitOfWork = unitOfWork;                 
+            _unitOfWork = unitOfWork;
             _leases = leases;
             _mapper = mapper;
             _eventBus = eventBus;
@@ -49,25 +49,26 @@ namespace Leasing.Application.CommandHandler
             => await TerminateAsync(r.LeaseId, r.TerminationDate, ct);
 
         public async Task<Result<LeaseResponse>> CreateAsync(
-            Guid apartmentId, Guid tenantId, DateOnly start, DateOnly end,
+            Guid apartmentUnitId, Guid tenantId, DateOnly start, DateOnly end,
             decimal monthlyRent, decimal deposit, CancellationToken ct)
         {
-            // Optional: cross-context checks via ports
-            if (_apartments is not null && !await _apartments.IsAvailableAsync(apartmentId, start, end, ct))
+            // Cross-context checks (optional)
+            if (_apartments is not null && !await _apartments.IsAvailableAsync(apartmentUnitId, start, end, ct))
                 return Result.Fail(LeaseError.ApartmentNotAvailable);
 
             if (_tenants is not null && !await _tenants.ExistsAsync(tenantId, ct))
                 return Result.Fail(LeaseError.InvalidTenant);
 
-            if (await _leases.ExistsOverlapAsync(apartmentId, start, end, ct))
+            if (await _leases.ExistsOverlapAsync(apartmentUnitId, start, end, ct))
                 return Result.Fail(LeaseError.Overlap);
 
-            var lease = Lease.Activate(apartmentId, tenantId, start, end, monthlyRent, deposit);
+            var lease = Lease.Activate(apartmentUnitId, tenantId, start, end, monthlyRent, deposit);
 
             await _leases.AddAsync(lease, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            await _unitOfWork.SaveChangesAsync(ct); // commit first
 
-            await _eventBus.PublishAsync(new LeaseActivatedEvent(apartmentId), ct);
+            // ✅ Publish the INTEGRATION event with the **ApartmentUnitId**
+            await _eventBus.PublishAsync(new LeaseActivatedIntegrationEvent(apartmentUnitId), ct);
 
             return Result.Ok(_mapper.Map<LeaseResponse>(lease));
         }
