@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Leasing.Application.Response
@@ -16,5 +17,9 @@ namespace Leasing.Application.Response
         public decimal MonthlyRent { get; set; }
         public decimal SecurityDeposit { get; set; }
         public string Status { get; set; } = "Active";
+
+        // Filled by queries; omitted when null so existing clients don’t break
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public TenantResponse? Tenant { get; set; }
     }
 }

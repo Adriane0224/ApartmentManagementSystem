@@ -42,6 +42,7 @@ namespace Leasing.Application.CommandHandler
             _tenants = tenants;
         }
 
+
         public async Task<Result<LeaseResponse>> Handle(CreateLeaseCommand r, CancellationToken ct)
             => await CreateAsync(r.ApartmentId, r.TenantId, r.StartDate, r.EndDate, r.MonthlyRent, r.SecurityDeposit, ct);
 
@@ -65,9 +66,8 @@ namespace Leasing.Application.CommandHandler
             var lease = Lease.Activate(apartmentUnitId, tenantId, start, end, monthlyRent, deposit);
 
             await _leases.AddAsync(lease, ct);
-            await _unitOfWork.SaveChangesAsync(ct); // commit first
+            await _unitOfWork.SaveChangesAsync(ct);
 
-            // ✅ Publish the INTEGRATION event with the **ApartmentUnitId**
             await _eventBus.PublishAsync(new LeaseActivatedIntegrationEvent(apartmentUnitId), ct);
 
             return Result.Ok(_mapper.Map<LeaseResponse>(lease));
@@ -81,6 +81,7 @@ namespace Leasing.Application.CommandHandler
             lease.Terminate(terminationDate);
 
             await _unitOfWork.SaveChangesAsync(ct);
+            await _eventBus.PublishAsync(new LeaseTerminatedIntegrationEvent(lease.ApartmentId), ct);
             return Result.Ok();
         }
     }
