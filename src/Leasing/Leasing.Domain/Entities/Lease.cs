@@ -7,14 +7,13 @@ namespace Leasing.Domain.Entities
     public class Lease : Entity
     {
         public LeaseId Id { get; private set; }
-        public Guid ApartmentId { get; private set; }
+        public Guid ApartmentId { get; private set; } 
         public Guid TenantId { get; private set; }
         public DateOnly StartDate { get; private set; }
         public DateOnly EndDate { get; private set; }
         public decimal MonthlyRent { get; private set; }
         public decimal SecurityDeposit { get; private set; }
         public LeaseStatus Status { get; private set; }
-        public decimal RentAmount { get; private set; }
 
         public enum LeaseStatus { Active = 1, Terminated = 2 }
 
@@ -40,9 +39,10 @@ namespace Leasing.Domain.Entities
 
             lease.RaiseDomainEvent(new LeaseActivatedEvent(
                 lease.Id.Value,
-                lease.ApartmentId,
+                lease.ApartmentId,    
                 lease.StartDate,
-                lease.EndDate));
+                lease.EndDate,
+                DateTime.UtcNow)); 
 
             return lease;
         }
@@ -50,10 +50,27 @@ namespace Leasing.Domain.Entities
         public void Terminate(DateOnly terminationDate)
         {
             if (Status == LeaseStatus.Terminated) return;
-            if (terminationDate < StartDate) throw new ArgumentException("Termination cannot be before start.");
+            if (terminationDate < StartDate)
+                throw new ArgumentException("Termination cannot be before start.");
+
             Status = LeaseStatus.Terminated;
 
-            // (optional) raise LeaseTerminatedEvent to free the unit
+            RaiseDomainEvent(new LeaseTerminatedEvent(
+                Id.Value,
+                ApartmentId,
+                terminationDate,
+                DateTime.UtcNow));
+        }
+
+        public void Renew(DateOnly newEndDate, decimal? newMonthlyRent = null)
+        {
+            if (Status != LeaseStatus.Active)
+                throw new InvalidOperationException("Only active leases can be renewed.");
+            if (newEndDate <= EndDate)
+                throw new ArgumentException("New end date must be after current end date.", nameof(newEndDate));
+
+            EndDate = newEndDate;
+            if (newMonthlyRent is > 0) MonthlyRent = newMonthlyRent.Value;
         }
     }
 }

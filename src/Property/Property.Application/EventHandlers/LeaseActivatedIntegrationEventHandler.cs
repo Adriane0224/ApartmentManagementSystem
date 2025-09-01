@@ -6,27 +6,24 @@ using Property.Domain.ValueObject;
 
 namespace Property.Application.EventHandlers
 {
-    public class LeaseActivatedIntegrationEventHandler
+    public sealed class LeaseActivatedEventHandler
         : INotificationHandler<LeaseActivatedIntegrationEvent>
     {
-        private readonly IApartmentRepository _apartments;
+        private readonly IApartmentRepository _repo;
         private readonly IUnitOfWork _uow;
 
-        public LeaseActivatedIntegrationEventHandler(IApartmentRepository apartments, IUnitOfWork uow)
+        public LeaseActivatedEventHandler(IApartmentRepository repo, IUnitOfWork uow)
+        { _repo = repo; _uow = uow; }
+
+        public async Task Handle(LeaseActivatedIntegrationEvent notification, CancellationToken ct)
         {
-            _apartments = apartments;
-            _uow = uow;
-        }
+            var apartment = await _repo.GetByIdForUpdateAsync(new ApartmentId(notification.ApartmentUnitId), ct);
+            if (apartment is null) return;
 
-        public async Task Handle(LeaseActivatedIntegrationEvent msg, CancellationToken ct)
-        {
-            var apt = await _apartments.GetByIdForUpdateAsync(new ApartmentId(msg.ApartmentUnitId), ct);
-            if (apt is null) return;
+            var svc = new ApartmentStatusService();
+            var occupied = svc.Occupy(apartment);
 
-            var service = new ApartmentStatusService();
-            var occupied = service.Occupy(apt);
-
-            await _apartments.UpdateAsync(occupied, ct);
+            await _repo.UpdateAsync(occupied, ct);
             await _uow.SaveChangesAsync(ct);
         }
     }

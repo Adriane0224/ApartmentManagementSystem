@@ -1,9 +1,4 @@
 ﻿using Leasing.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Leasing.Domain.Services
 {
@@ -11,13 +6,17 @@ namespace Leasing.Domain.Services
     {
         public void ValidateCreate(Lease lease)
         {
-            if (lease == null)
+            if (lease is null)
                 throw new ArgumentNullException(nameof(lease));
+
             if (lease.StartDate >= lease.EndDate)
                 throw new InvalidOperationException("Start date must be before end date.");
-            if (lease.RentAmount <= 0)
-                throw new InvalidOperationException("Rent amount must be positive.");
-            // Add more business rules as needed
+
+            if (lease.MonthlyRent <= 0)
+                throw new InvalidOperationException("Monthly rent must be positive.");
+
+            if (lease.SecurityDeposit < 0)
+                throw new InvalidOperationException("Security deposit cannot be negative.");
         }
     }
 }

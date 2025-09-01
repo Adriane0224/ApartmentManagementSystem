@@ -4,6 +4,7 @@ using Leasing.Controllers.Request;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using static Leasing.Application.Commands.CreateLeaseCommands;
+using static Leasing.Application.Commands.RenewLeaseCommands;
 using static Leasing.Application.Commands.TerminateLeaseCommands;
 
 namespace Leasing.Controllers
@@ -53,6 +54,13 @@ namespace Leasing.Controllers
                 ? await _queries.GetActiveByApartmentAsync(apartmentId.Value, ct)
                 : await _queries.GetActiveAsync(ct);
             return Ok(leases);
+        }
+
+        [HttpPost("renew/{id:guid}")]
+        public async Task<IActionResult> Renew(Guid id, [FromBody] RenewLeaseRequest req, CancellationToken ct)
+        {
+            var result = await _mediator.Send(new RenewLeaseCommand(id, req.NewEndDate, req.NewMonthlyRent), ct);
+            return result.IsFailed ? BadRequest(result.Errors.First().Message) : Ok(result.Value);
         }
     }
 }

@@ -2,11 +2,10 @@
 
 namespace Leasing.Domain.DomainEvents
 {
-    public record LeaseActivatedEvent(
+    public record LeaseTerminatedEvent(
         Guid LeaseId,
         Guid ApartmentUnitId,
-        DateOnly StartDate,
-        DateOnly EndDate,
+        DateOnly TerminationDate,
         DateTime OccurredOn
     ) : IDomainEvent;
 }

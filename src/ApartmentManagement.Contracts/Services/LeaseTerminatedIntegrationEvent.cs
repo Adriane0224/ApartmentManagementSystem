@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 
 namespace ApartmentManagement.Contracts.Services
 {
-    public record LeaseTerminatedIntegrationEvent(Guid ApartmentId)
+    public record LeaseTerminatedIntegrationEvent(Guid ApartmentUnitId)
         : IIntegrationEvent, INotification;
 }

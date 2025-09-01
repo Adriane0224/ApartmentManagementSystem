@@ -6,28 +6,25 @@ using Property.Domain.ValueObject;
 
 namespace Property.Application.EventHandlers
 {
-    public class LeaseTerminatedEventHandler : INotificationHandler<LeaseTerminatedIntegrationEvent>
+    public sealed class LeaseTerminatedEventHandler
+        : INotificationHandler<LeaseTerminatedIntegrationEvent>
     {
-        private readonly IApartmentRepository _apartmentRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IApartmentRepository _repo;
+        private readonly IUnitOfWork _uow;
 
-        public LeaseTerminatedEventHandler(IApartmentRepository apartmentRepository, IUnitOfWork unitOfWork)
-        {
-            _apartmentRepository = apartmentRepository;
-            _unitOfWork = unitOfWork;
-        }
+        public LeaseTerminatedEventHandler(IApartmentRepository repo, IUnitOfWork uow)
+        { _repo = repo; _uow = uow; }
 
         public async Task Handle(LeaseTerminatedIntegrationEvent notification, CancellationToken ct)
         {
-            var apartment = await _apartmentRepository.GetByIdForUpdateAsync(
-                new ApartmentId(notification.ApartmentId), ct);
+            var apartment = await _repo.GetByIdForUpdateAsync(new ApartmentId(notification.ApartmentUnitId), ct);
             if (apartment is null) return;
 
-            var service = new ApartmentStatusService();
-            var vacant = service.MarkAsVacant(apartment);
+            var svc = new ApartmentStatusService();
+            var vacant = svc.MarkAsVacant(apartment);
 
-            await _apartmentRepository.UpdateAsync(vacant, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            await _repo.UpdateAsync(vacant, ct);
+            await _uow.SaveChangesAsync(ct);
         }
     }
 }
