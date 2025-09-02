@@ -19,7 +19,7 @@ namespace Leasing.Infrastructure.Data.Configurations
             b.Property(l => l.MonthlyRent).HasColumnType("decimal(18,2)");
             b.Property(l => l.SecurityDeposit).HasColumnType("decimal(18,2)");
             b.Property(l => l.Status).HasConversion<int>().IsRequired();
-            b.Property(l => l.MonthlyRent).HasColumnType("decimal(18,2)");
+            //b.Property(l => l.MonthlyRent).HasColumnType("decimal(18,2)");
 
             // Optional helpful index
             b.HasIndex(l => new { l.ApartmentId, l.Status });

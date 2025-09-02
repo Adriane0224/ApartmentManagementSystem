@@ -22,7 +22,7 @@ namespace Property.Controllers
         [HttpPost("addApartment")]
         public async Task<IActionResult> AddApartment([FromBody] AddApartmentRequest request)
         {
-            var result = await _commands.AddApartmentAsync(request.UnitNumber, HttpContext.RequestAborted);
+            var result = await _commands.AddApartmentAsync(request.UnitNumber, request.Floor, HttpContext.RequestAborted);
             if (result.IsFailed)
             {
                 return BadRequest(result.Errors.First().Message);

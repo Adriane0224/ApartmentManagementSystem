@@ -5,7 +5,7 @@ namespace Property.Application.Commands
 {
     public interface IApartmentCommands
     {
-        Task<Result<ApartmentResponse>> AddApartmentAsync(string unit, CancellationToken cancellationToken);
+        Task<Result<ApartmentResponse>> AddApartmentAsync(string unit, int floor, CancellationToken cancellationToken);
         public Task<Result> DeleteApartmentAsync(string id, CancellationToken cancellationToken);
         public Task<Result> OccupyApartmentAsync(Guid id, CancellationToken cancellationToken);
         public Task<Result> VacantApartmentByIdAsync(Guid id, CancellationToken cancellationToken);

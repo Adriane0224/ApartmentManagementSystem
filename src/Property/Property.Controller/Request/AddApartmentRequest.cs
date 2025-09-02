@@ -11,5 +11,8 @@ namespace Property.Controller.Request
     {
         [Required]
         public string UnitNumber { get; set; } = null!;
+        public int Floor { get; set; }
+
+
     }
 }

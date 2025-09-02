@@ -1,11 +1,13 @@
 using ApartmentManagement.Contracts.Services;
+using Billing.Infrastructure;
+using Billing.Infrastructure.MappingProfiles;
 using Directory.Application;
 using Directory.Infrastructure;
 using Directory.Infrastructure.MappingProfiles;
 using Leasing.Application;
-using Leasing.Infrastructure;
 using Leasing.Infrastructure.MappingProfiles;
 using Property.Application;
+using Billing.Application;
 using Property.Infrastructure;
 using Property.Infrastructure.MappingProfiles;
 using Scalar.AspNetCore;
@@ -21,6 +23,8 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Leasing.Application.AssemblyReference).Assembly);
     //cfg.RegisterServicesFromAssembly(typeof(Property.Application.AssemblyReference).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Directory.Application.AssemblyReference).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Billing.Application.AssemblyReference).Assembly);
 });
 
 //Leasing
@@ -31,11 +35,16 @@ builder.Services.AddLeasingInfrastructure(builder.Configuration);
 builder.Services.AddApartmentApplication();
 builder.Services.AddApartmentInfrastructure(builder.Configuration);
 
+//Billing
+builder.Services.AddBillingApplication();
+builder.Services.AddBillingInfrastructure(builder.Configuration);
+
 builder.Services.AddAutoMapper(cfg =>
 {
    cfg.AddMaps(typeof(ApartmentMappingProfile).Assembly);
     cfg.AddMaps(typeof(LeaseMappingProfile).Assembly);
     cfg.AddMaps(typeof(TenantMappingProfile).Assembly);
+    cfg.AddMaps(typeof(BillingMappingProfile).Assembly);
 });
 
 //Directory

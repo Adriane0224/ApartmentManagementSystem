@@ -28,6 +28,9 @@
   <ItemGroup>
     <ProjectReference Include="..\ApartmentManagement.Contracts\ApartmentManagement.Contracts.csproj" />
     <ProjectReference Include="..\ApartmentManagement.SharedKernel\ApartmentManagement.SharedKernel.csproj" />
+    <ProjectReference Include="..\Billing\Billing.Application\Billing.Application.csproj" />
+    <ProjectReference Include="..\Billing\Billing.Controller\Billing.Controller.csproj" />
+    <ProjectReference Include="..\Billing\Billing.Infrastructure\Billing.Infrastructure.csproj" />
     <ProjectReference Include="..\Directory\Directory.Controllers\Directory.Controllers.csproj" />
     <ProjectReference Include="..\Directory\Directory.Infrastructure\Directory.Infrastructure.csproj" />
     <ProjectReference Include="..\Leasing\Leasing.Application\Leasing.Application.csproj" />

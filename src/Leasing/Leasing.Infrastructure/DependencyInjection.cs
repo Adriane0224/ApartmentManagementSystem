@@ -9,7 +9,6 @@ using Leasing.Infrastructure.QueryHandlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System; // for Uri
 
 public static class DependencyInjection
 {
@@ -22,7 +21,6 @@ public static class DependencyInjection
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(LeaseMappingProfile).Assembly));
 
-        // ✅ Validate config before creating Uri
         var baseUrl = config["TenantApi:BaseUrl"];
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new InvalidOperationException(
