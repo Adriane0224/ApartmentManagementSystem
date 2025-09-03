@@ -26,7 +26,7 @@ namespace Property.Application.CommandHandler
             List<ApartmentUnit> apartments = await _unitOfWork.Apartments.GetAllAsync();
             if (apartments.Any(a => a.Unit == unit))
             {
-                return Result.Fail(new ApartmentError($"Apartment unit '{unit}' already exists."));
+                return Result.Fail(new ApartmentUnitError($"Apartment unit '{unit}' already exists."));
             }
             ApartmentUnit apartment = ApartmentUnit.Create(unit, floor, description);
             await _unitOfWork.Apartments.AddAsync(apartment, cancellationToken);
@@ -53,7 +53,7 @@ namespace Property.Application.CommandHandler
             var apartments = await _unitOfWork.Apartments.GetAllAsync();
                 var apartment = apartments.FirstOrDefault(p => p.Id.Value == id);
                 if (apartment == null)
-                    return Result.Fail(new ApartmentError("This property doesn't exist."));
+                    return Result.Fail(new PropertyDidNotExistError("This property doesn't exist."));
 
             var apartmentService = new ApartmentStatusService();
             ApartmentUnit occupiedApartment = apartmentService.Occupy(apartment);
@@ -68,7 +68,7 @@ namespace Property.Application.CommandHandler
             ApartmentUnit? apartment = apartments.FirstOrDefault(p => p.Unit == unit);
             if (apartment == null)
             {
-                return Result.Fail(new ApartmentError("This property doesn't exist."));
+                return Result.Fail(new PropertyDidNotExistError("This property doesn't exist."));
             }
             var apartmentService = new ApartmentStatusService();
             ApartmentUnit occupiedProperty = apartmentService.MarkAsUnderMaintenance(apartment);
@@ -82,7 +82,7 @@ namespace Property.Application.CommandHandler
             var apartments = await _unitOfWork.Apartments.GetAllAsync();
             var apartment = apartments.FirstOrDefault(a => a.Id.Value == id);
             if (apartment == null)
-                return Result.Fail(new ApartmentError("Apartment not found."));
+                return Result.Fail(new ApartmentUnitNotFoundError("Apartment not found."));
 
             var apartmentService = new ApartmentStatusService();
             ApartmentUnit vacantApartment = apartmentService.MarkAsVacant(apartment);

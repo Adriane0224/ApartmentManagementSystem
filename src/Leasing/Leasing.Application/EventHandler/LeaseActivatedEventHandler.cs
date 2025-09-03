@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Leasing.Application.EventHandler
 {
-    public sealed class LeaseActivatedEventHandler : INotificationHandler<LeaseActivatedEvent>
+    public class LeaseActivatedEventHandler : INotificationHandler<LeaseActivatedEvent>
     {
         private readonly IEventBus _eventBus;
 

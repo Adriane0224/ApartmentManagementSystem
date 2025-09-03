@@ -1,5 +1,6 @@
 ﻿using ApartmentManagement.SharedKernel.Entities;
 using Leasing.Domain.DomainEvents;
+using Leasing.Domain.Exception;
 using Leasing.Domain.ValueObject;
 
 namespace Leasing.Domain.Entities
@@ -22,8 +23,8 @@ namespace Leasing.Domain.Entities
         public static Lease Activate(Guid apartmentId, Guid tenantId, DateOnly start, DateOnly end,
                                      decimal monthlyRent, decimal deposit)
         {
-            if (end <= start) throw new ArgumentException("End date must be after start date.");
-            if (monthlyRent <= 0) throw new ArgumentException("Monthly rent must be positive.");
+            if (end <= start) throw new DateInvalidException("End date must be after start date.");
+            if (monthlyRent <= 0) throw new MonthlyRentPositiveException("Monthly rent must be positive.");
 
             var lease = new Lease
             {
@@ -51,7 +52,7 @@ namespace Leasing.Domain.Entities
         {
             if (Status == LeaseStatus.Terminated) return;
             if (terminationDate < StartDate)
-                throw new ArgumentException("Termination cannot be before start.");
+                throw new TerminationException("Termination cannot be before start.");
 
             Status = LeaseStatus.Terminated;
 

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// NEW
+
 namespace Billing.Application.Response
 {
-    public sealed class InvoiceResponse
+    public  class InvoiceResponse
     {
         public Guid Id { get; set; }
         public Guid LeaseId { get; set; }

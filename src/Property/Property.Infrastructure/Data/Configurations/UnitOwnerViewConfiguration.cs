@@ -8,16 +8,13 @@ namespace Property.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<UnitOwnerView> b)
         {
-            b.ToTable("UnitOwnerView", "Apartment");
+            b.ToTable("UnitOwners", "Apartment");
 
             b.HasKey(x => x.UnitId);
             b.Property(x => x.UnitId).IsRequired();
             b.Property(x => x.OwnerId).IsRequired();
 
-            b.Property(x => x.Name)
-                .HasMaxLength(200)
-                .IsRequired();
-
+            b.Property(x => x.Name).HasMaxLength(200).IsRequired();
             b.Property(x => x.Email).HasMaxLength(200);
             b.Property(x => x.Phone).HasMaxLength(50);
         }

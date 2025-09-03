@@ -1,6 +1,7 @@
 ﻿using Billing.Application.Commands;
 using Billing.Application.Queries;
 using Billing.Application.Response;
+using Billing.Controller.Request;
 using Billing.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -48,10 +49,21 @@ namespace Billing.Controller
         }
 
         [HttpPost("payments")]
-        public async Task<IActionResult> RecordPayment([FromBody] RecordPaymentCommand cmd, CancellationToken ct)
+        public async Task<IActionResult> RecordPayment([FromBody] RecordPaymentRequest body, CancellationToken ct)
         {
+
+            var cmd = new RecordPaymentCommand(
+                InvoiceId: body.InvoiceId,
+                PayerId: body.PayerId,
+                Amount: body.Amount,
+                Method: body.Method,
+                Reference: body.Reference ?? ""
+            );
+
             var result = await _mediator.Send(cmd, ct);
-            return result.IsFailed ? BadRequest(result.Errors.First().Message) : Ok(result.Value);
+            return result.IsFailed
+                ? BadRequest(result.Errors.First().Message)
+                : Ok(result.Value);
         }
 
         [HttpGet("payments")]

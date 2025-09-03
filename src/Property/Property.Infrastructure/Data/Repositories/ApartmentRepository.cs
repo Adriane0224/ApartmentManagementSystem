@@ -26,39 +26,34 @@ namespace Property.Infrastructure.Data.Repositories
         public Task DeleteAsync(ApartmentUnit apartmentUnit)
         {
             _context.Apartments.Remove(apartmentUnit);
-            return Task.CompletedTask; // actual save happens in UnitOfWork
+            return Task.CompletedTask; 
         }
 
         public Task<List<ApartmentUnit>> GetAllAsync()
         {
-            // Use AsNoTracking for read-only list queries
+            // for read-only list queries
             return _context.Apartments.AsNoTracking().ToListAsync();
         }
-
-        // Interface overload WITHOUT CancellationToken
         public Task UpdateAsync(ApartmentUnit apartmentUnit)
         {
             _context.Apartments.Update(apartmentUnit);
-            return Task.CompletedTask; // actual save happens in UnitOfWork
+            return Task.CompletedTask;
         }
 
-        // Interface overload WITH CancellationToken
         public Task UpdateAsync(ApartmentUnit apartmentUnit, CancellationToken ct)
         {
             _context.Apartments.Update(apartmentUnit);
-            return Task.CompletedTask; // actual save happens in UnitOfWork
+            return Task.CompletedTask;
         }
 
         public Task<ApartmentUnit?> GetByIdForUpdateAsync(ApartmentId id, CancellationToken cancellationToken)
         {
-            // Tracked entity, suitable for updates
             return _context.Apartments
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
         }
 
         public Task<ApartmentUnit?> GetByIdAsync(Guid apartmentId, CancellationToken cancellationToken)
         {
-            // AsNoTracking for read-only query
             return _context.Apartments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(a => a.Id.Value == apartmentId, cancellationToken);

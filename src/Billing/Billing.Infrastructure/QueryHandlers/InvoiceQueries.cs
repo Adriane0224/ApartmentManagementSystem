@@ -38,7 +38,7 @@ namespace Billing.Infrastructure.QueryHandlers
             return list.Select(ToDto).ToList();
         }
 
-        private static InvoiceResponse ToDto(Billing.Domain.Entities.RentInvoice i) => new()
+        private static InvoiceResponse ToDto(RentInvoice i) => new()
         {
             Id = i.Id.Value,
             LeaseId = i.LeaseId,

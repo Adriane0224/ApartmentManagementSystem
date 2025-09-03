@@ -5,6 +5,5 @@
         IInvoiceRepository Invoices { get; }
         IPaymentRepository Payments { get; }
         Task SaveChangesAsync(CancellationToken cancellationToken);
-        //Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

@@ -20,7 +20,6 @@ namespace Ownership.Controller
             _queries = queries;
         }
 
-        // Create owner
         [HttpPost("owners")]
         public async Task<IActionResult> Create([FromBody] CreateOwnerRequest req, CancellationToken ct)
         {
@@ -35,7 +34,6 @@ namespace Ownership.Controller
                 : Ok(result.Value);
         }
 
-        // Update owner
         [HttpPut("owners/{ownerId:guid}")]
         public async Task<IActionResult> Update(Guid ownerId, [FromBody] UpdateOwnerRequest req, CancellationToken ct)
         {
@@ -47,7 +45,6 @@ namespace Ownership.Controller
                 : Ok(result.Value);
         }
 
-        // Get owner by id
         [HttpGet("owners/{ownerId:guid}")]
         public async Task<IActionResult> Get(Guid ownerId, CancellationToken ct)
         {
@@ -55,7 +52,6 @@ namespace Ownership.Controller
             return owner is null ? NotFound() : Ok(owner);
         }
 
-        // Assign owner to unit
         [HttpPost("assign")]
         public async Task<IActionResult> Assign([FromBody] AssignOwnerToUnitRequest req, CancellationToken ct)
         {
@@ -70,7 +66,6 @@ namespace Ownership.Controller
                 : Ok(result.Value);
         }
 
-        // Unassign owner from unit
         [HttpDelete("assign/{unitId:guid}")]
         public async Task<IActionResult> Unassign(Guid unitId, CancellationToken ct)
         {
@@ -78,7 +73,6 @@ namespace Ownership.Controller
             return result.IsFailed ? BadRequest(result.Errors.First().Message) : NoContent();
         }
 
-        // Lookup owner by unit
         [HttpGet("by-unit/{unitId:guid}")]
         public async Task<IActionResult> GetByUnit(Guid unitId, CancellationToken ct)
         {

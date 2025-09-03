@@ -5,7 +5,7 @@
         Task<List<LeaseDto>> GetActiveLeasesAsync(CancellationToken ct);
     }
 
-    public sealed class LeaseDto
+    public class LeaseDto
     {
         public Guid Id { get; set; }
         public Guid ApartmentId { get; set; }

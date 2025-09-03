@@ -1,4 +1,5 @@
 ﻿using Billing.Application.Commands;
+using Billing.Application.Errors;
 using Billing.Application.Response;
 using Billing.Domain.Entities;
 using Billing.Domain.Ports;
@@ -16,20 +17,20 @@ namespace Billing.Application.CommandHandler
         IRequestHandler<RecordPaymentCommand, Result<PaymentResponse>>
     {
         private readonly ILeasingReadPort _leasing;
-        private readonly IApartmentsReadPort _apartments; // NEW
+        private readonly IApartmentsReadPort _apartments;
         private readonly IInvoiceRepository _invoices;
         private readonly IPaymentRepository _payments;
         private readonly IUnitOfWork _uow;
 
         public BillingCommands(
             ILeasingReadPort leasing,
-            IApartmentsReadPort apartments,      // NEW
+            IApartmentsReadPort apartments,
             IInvoiceRepository invoices,
             IPaymentRepository payments,
             IUnitOfWork uow)
         {
             _leasing = leasing;
-            _apartments = apartments;            // NEW
+            _apartments = apartments;
             _invoices = invoices;
             _payments = payments;
             _uow = uow;
@@ -38,7 +39,7 @@ namespace Billing.Application.CommandHandler
         public async Task<Result<List<InvoiceResponse>>> Handle(GenerateInvoicesForPeriodCommand r, CancellationToken ct)
         {
             if (!TryParsePeriod(r.Period, out var year, out var month))
-                return Result.Fail("Invalid period. Use YYYY-MM.");
+                return Result.Fail(new InvalidPeriodError("Invalid period. Use YYYY-MM."));
 
             var (from, to) = MonthRange(year, month);
             var dueDate = new DateOnly(year, month, Math.Min(5, DateTime.DaysInMonth(year, month)));
@@ -58,21 +59,12 @@ namespace Billing.Application.CommandHandler
                 // fetch unit snapshot (UnitNumber/Floor)
                 if (!unitCache.TryGetValue(l.ApartmentId, out var snap))
                 {
-                    var unit = await _apartments.GetUnitAsync(l.ApartmentId, ct); // adjust if your lease has ApartmentUnitId
+                    var unit = await _apartments.GetUnitAsync(l.ApartmentId, ct);
                     snap = (unit?.UnitNumber, unit?.Floor);
                     unitCache[l.ApartmentId] = snap;
                 }
 
-                // NOTE: ensure RentInvoice.Create supports unit snapshot parameters
-                // signature: Create(leaseId, apartmentUnitId, tenantId, year, month, amount, dueDate, unitNumber, floor)
-                var inv = RentInvoice.Create(
-                    l.Id,
-                    l.ApartmentId,
-                    l.TenantId,
-                    year,
-                    month,
-                    l.MonthlyRent,
-                    dueDate,
+                var inv = RentInvoice.Create( l.Id,l.ApartmentId,l.TenantId, year, month,l.MonthlyRent,dueDate,
                     snap.unitNumber,
                     snap.floor);
 
@@ -87,7 +79,7 @@ namespace Billing.Application.CommandHandler
         public async Task<Result<PaymentResponse>> Handle(RecordPaymentCommand r, CancellationToken ct)
         {
             var invoice = await _invoices.GetByIdAsync(new InvoiceId(r.InvoiceId), ct);
-            if (invoice is null) return Result.Fail("Invoice not found.");
+            if (invoice is null) return Result.Fail(new InvoiceNotFoundError("Invoice not found "));
 
             var payerId = r.PayerId ?? invoice.TenantId;
 

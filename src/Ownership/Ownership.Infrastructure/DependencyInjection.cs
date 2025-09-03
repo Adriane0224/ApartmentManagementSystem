@@ -5,8 +5,6 @@ using Ownership.Domain.Repositories;
 using Ownership.Infrastructure.Data;
 using Ownership.Infrastructure.Data.Repositories;
 using Ownership.Infrastructure.MappingProfiles;
-
-// ⬇️ add these
 using Ownership.Application.Queries;
 using Ownership.Infrastructure.QueryHandlers;
 

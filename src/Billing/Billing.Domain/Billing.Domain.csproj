@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DomainEvents\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ApartmentManagement.SharedKernel\ApartmentManagement.SharedKernel.csproj" />
   </ItemGroup>
 

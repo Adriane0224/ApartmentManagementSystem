@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Property.Infrastructure.ReadModels
 {
-    public sealed class UnitOwnerView
+    public class UnitOwnerView
     {
         public Guid UnitId { get; set; } 
         public Guid OwnerId { get; set; }

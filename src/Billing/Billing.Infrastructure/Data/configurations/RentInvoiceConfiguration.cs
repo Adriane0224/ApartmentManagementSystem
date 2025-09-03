@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Billing.Infrastructure.Data.Configurations
 {
-    public sealed class RentInvoiceConfiguration : IEntityTypeConfiguration<RentInvoice>
+    public class RentInvoiceConfiguration : IEntityTypeConfiguration<RentInvoice>
     {
         public void Configure(EntityTypeBuilder<RentInvoice> b)
         {

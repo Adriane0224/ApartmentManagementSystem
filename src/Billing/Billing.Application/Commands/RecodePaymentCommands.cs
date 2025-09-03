@@ -11,7 +11,7 @@ namespace Billing.Application.Commands
 {
     public static class RecordPaymentCommands
     {
-        public sealed record RecordPaymentCommand(
+        public record RecordPaymentCommand(
             Guid InvoiceId,
             decimal Amount,
             string Method,

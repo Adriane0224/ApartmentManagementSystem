@@ -1,16 +1,16 @@
 ﻿using ApartmentManagement.Contracts.Services;
 using AutoMapper;
+using Borrowing.Application.Errors;
 using FluentResults;
 using Leasing.Application.Commands;
-using Leasing.Application.Errors;
 using Leasing.Application.Response;
 using Leasing.Domain.Entities;
 using Leasing.Domain.Repositories;
 using Leasing.Domain.ValueObject;
 using MediatR;
 using static Leasing.Application.Commands.CreateLeaseCommands;
+using static Leasing.Application.Commands.RenewLeaseCommands;
 using static Leasing.Application.Commands.TerminateLeaseCommands;
-using static Leasing.Application.Commands.RenewLeaseCommands;   // 👈 add this
 
 namespace Leasing.Application.CommandHandler
 {
@@ -18,7 +18,7 @@ namespace Leasing.Application.CommandHandler
         ILeaseCommands,
         IRequestHandler<CreateLeaseCommand, Result<LeaseResponse>>,
         IRequestHandler<TerminateLeaseCommand, Result>,
-        IRequestHandler<RenewLeaseCommand, Result<LeaseResponse>>   // 👈 add this
+        IRequestHandler<RenewLeaseCommand, Result<LeaseResponse>> 
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILeaseRepository _leases;
@@ -50,7 +50,7 @@ namespace Leasing.Application.CommandHandler
         public async Task<Result> Handle(TerminateLeaseCommand r, CancellationToken ct)
             => await TerminateAsync(r.LeaseId, r.TerminationDate, ct);
 
-        public async Task<Result<LeaseResponse>> Handle(RenewLeaseCommand r, CancellationToken ct)   // 👈 add this
+        public async Task<Result<LeaseResponse>> Handle(RenewLeaseCommand r, CancellationToken ct)
             => await RenewAsync(r.LeaseId, r.NewEndDate, r.NewMonthlyRent, ct);
 
         public async Task<Result<LeaseResponse>> CreateAsync(
@@ -59,20 +59,20 @@ namespace Leasing.Application.CommandHandler
         {
             // Optional cross-context checks
             if (_apartments is not null && !await _apartments.IsAvailableAsync(apartmentUnitId, start, end, ct))
-                return Result.Fail(LeaseError.ApartmentNotAvailable);
+                return Result.Fail(new ApartmentNotAvailableError("Apartment Not Available"));
 
             if (_tenants is not null && !await _tenants.ExistsAsync(tenantId, ct))
-                return Result.Fail(LeaseError.InvalidTenant);
+                return Result.Fail(new InvalidTenantError("Invalid Tenant"));
 
             if (await _leases.ExistsOverlapAsync(apartmentUnitId, start, end, ct))
-                return Result.Fail(LeaseError.Overlap);
+                return Result.Fail(new OverlapError("Apartment unit is already Occupied"));
 
             var lease = Lease.Activate(apartmentUnitId, tenantId, start, end, monthlyRent, deposit);
 
             await _leases.AddAsync(lease, ct);
             await _unitOfWork.SaveChangesAsync(ct);
 
-            // Integration event so Property flips to Occupied
+            // event to Property flips to Occupied
             await _eventBus.PublishAsync(new LeaseActivatedIntegrationEvent(apartmentUnitId), ct);
 
             return Result.Ok(_mapper.Map<LeaseResponse>(lease));
@@ -81,23 +81,22 @@ namespace Leasing.Application.CommandHandler
         public async Task<Result> TerminateAsync(Guid leaseId, DateOnly terminationDate, CancellationToken ct)
         {
             var lease = await _leases.GetByIdForUpdateAsync(new LeaseId(leaseId), ct);
-            if (lease is null) return Result.Fail(LeaseError.NotFound);
+            if (lease is null) return Result.Fail(new EntityNotFoundError($"Lease not found {leaseId}"));
 
             lease.Terminate(terminationDate);
 
             await _unitOfWork.SaveChangesAsync(ct);
 
-            // Integration event so Property flips to Available
+            // event so Property flips to Available
             await _eventBus.PublishAsync(new LeaseTerminatedIntegrationEvent(lease.ApartmentId), ct);
 
             return Result.Ok();
         }
 
-        // 👇 New: renew logic
         private async Task<Result<LeaseResponse>> RenewAsync(Guid leaseId, DateOnly newEndDate, decimal? newMonthlyRent, CancellationToken ct)
         {
             var lease = await _leases.GetByIdForUpdateAsync(new LeaseId(leaseId), ct);
-            if (lease is null) return Result.Fail(LeaseError.NotFound);
+            if (lease is null) return Result.Fail(new EntityNotFoundError($"Lease not found {leaseId}"));
 
             lease.Renew(newEndDate, newMonthlyRent);
             await _unitOfWork.SaveChangesAsync(ct);

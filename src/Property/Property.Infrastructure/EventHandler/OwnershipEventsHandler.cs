@@ -6,7 +6,7 @@ using Property.Infrastructure.ReadModels;
 
 namespace Property.Infrastructure.EventHandlers 
 {
-    public sealed class OwnershipEventsHandler :
+    public class OwnershipEventsHandler :
         INotificationHandler<OwnerAssignedToUnitDomainEvent>,
         INotificationHandler<OwnerUnassignedFromUnitDomainEvent>
     {

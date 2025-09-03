@@ -6,7 +6,7 @@ using Property.Domain.ValueObject;
 
 namespace Property.Application.EventHandlers
 {
-    public sealed class LeaseActivatedEventHandler
+    public class LeaseActivatedEventHandler
         : INotificationHandler<LeaseActivatedIntegrationEvent>
     {
         private readonly IApartmentRepository _repo;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Property.Application.Response
 {
-    public sealed class ApartmentResponse
+    public class ApartmentResponse
     {
         public Guid Id { get; set; }
         public string Unit { get; set; } = "";

@@ -10,7 +10,7 @@ namespace Billing.Domain.Entities
         public Guid ApartmentUnitId { get; private set; }
         public Guid TenantId { get; private set; }
 
-        // NEW: apartment unit snapshot
+        // apartment unit 
         public string? UnitNumber { get; private set; }
         public int? Floor { get; private set; }
 

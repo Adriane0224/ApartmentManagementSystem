@@ -10,12 +10,8 @@ public sealed record Email
     {
         if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("Email is required.", nameof(value));
         var normalized = value.Trim();
-
-        // super-light validation; you can swap for a stronger regex later
         if (!normalized.Contains('@') || normalized.StartsWith("@") || normalized.EndsWith("@"))
             throw new ArgumentException("Invalid email format.", nameof(value));
-
-        // normalize to lowercase for consistent equality
         return new Email(normalized.ToLowerInvariant());
     }
 

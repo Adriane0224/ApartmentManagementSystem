@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Leasing.Application.EventHandler
 {
-    public sealed class LeaseDomainEventHandler :
+    public class LeaseDomainEventHandler :
         INotificationHandler<Leasing.Domain.DomainEvents.LeaseActivatedEvent>,
         INotificationHandler<Leasing.Domain.DomainEvents.LeaseTerminatedEvent>
     {

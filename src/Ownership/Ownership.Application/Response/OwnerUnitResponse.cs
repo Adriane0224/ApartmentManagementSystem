@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ownership.Application.Response
 {
-    public sealed class OwnerUnitResponse
+    public class OwnerUnitResponse
     {
         public Guid OwnerId { get; set; }
         public Guid UnitId { get; set; }

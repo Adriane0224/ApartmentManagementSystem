@@ -63,18 +63,6 @@ namespace Property.Controllers
             return Ok(apartments);
         }
 
-        //[HttpGet("/getAllUnderMaintenanceApartments")]
-        //public async Task<IActionResult> GetUnderMaintenanceApartments(string? name)
-        //{
-        //    ApartmentResponse? apartment = await _queries.GetApartmentByUnitAsync(name);
-        //    if (apartment == null)
-        //    {
-        //        var apartments = await _queries.GetAllApartmentsAsync();
-        //        return Ok(apartment);
-        //    }
-        //    return Ok(apartment);
-        //}
-
         [HttpPost("{id:guid}/makeAvailable")]
         public async Task<IActionResult> Vacate(Guid id)
         {
@@ -112,9 +100,9 @@ namespace Property.Controllers
         }
 
         [HttpDelete("deleteApartment")]
-        public async Task<IActionResult> DeleteApartment(string name)
+        public async Task<IActionResult> DeleteApartment(string unit)
         {
-            var result = await _commands.DeleteApartmentAsync(name, HttpContext.RequestAborted);
+            var result = await _commands.DeleteApartmentAsync(unit, HttpContext.RequestAborted);
             if (result.IsFailed)
             {
                 return BadRequest(result.Errors.First().Message);

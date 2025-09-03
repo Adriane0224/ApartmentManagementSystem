@@ -12,7 +12,6 @@ using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using Property.Domain.ValueObject;
 
 namespace Leasing.Infrastructure.QueryHandlers
 {
@@ -24,7 +23,7 @@ namespace Leasing.Infrastructure.QueryHandlers
         public string? Phone { get; set; }
     }
 
-    // 👇 helper for apartment enrichment (no public exposure)
+    // helper for apartment enrichment
     file sealed class AptBrief
     {
         public Guid Id { get; init; }
@@ -35,14 +34,14 @@ namespace Leasing.Infrastructure.QueryHandlers
     public class LeaseQueries : ILeaseQueries
     {
         private readonly LeasingDbContext _db;
-        private readonly ApartmentDbContext _property;   // 👈 inject property context
+        private readonly ApartmentDbContext _property;
         private readonly IMapper _mapper;
         private readonly IHttpClientFactory _http;
 
         public LeaseQueries(LeasingDbContext db, ApartmentDbContext property, IMapper mapper, IHttpClientFactory http)
         {
             _db = db;
-            _property = property;                         // 👈 store it
+            _property = property;
             _mapper = mapper;
             _http = http;
         }
@@ -57,9 +56,9 @@ namespace Leasing.Infrastructure.QueryHandlers
 
             if (dto is null) return null;
 
-            // 👇 enrich with apartment
+            // enrich with apartment
             var apt = await _property.Apartments.AsNoTracking()
-            .Where(a => a.Id == new ApartmentId(dto.ApartmentId))   // ✅ VO comparison
+            .Where(a => a.Id == new ApartmentId(dto.ApartmentId)) 
             .Select(a => new AptBrief { Id = a.Id.Value, Unit = a.Unit, Floor = a.Floor })
             .FirstOrDefaultAsync(ct);
 
@@ -81,7 +80,7 @@ namespace Leasing.Infrastructure.QueryHandlers
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(ct);
 
-            await EnrichApartmentsAsync(list, ct); // 👈 add
+            await EnrichApartmentsAsync(list, ct);
             await EnrichTenantsAsync(list, ct);
             return list;
         }
@@ -93,12 +92,10 @@ namespace Leasing.Infrastructure.QueryHandlers
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(ct);
 
-            await EnrichApartmentsAsync(list, ct); // 👈 add
+            await EnrichApartmentsAsync(list, ct);
             await EnrichTenantsAsync(list, ct);
             return list;
         }
-
-        // ---------------- enrichment helpers ----------------
 
         private async Task EnrichApartmentsAsync(List<LeaseResponse> leases, CancellationToken ct)
         {
@@ -164,7 +161,7 @@ namespace Leasing.Infrastructure.QueryHandlers
                     if (t is not null)
                         dict[id] = new TenantResponse { Id = t.Id, Name = t.Name, Email = t.Email, Phone = t.Phone };
                 }
-                catch { /* ignore and continue */ }
+                catch {}
                 finally { sem.Release(); }
             });
 

@@ -4,7 +4,6 @@ namespace Property.Domain.Entities
 {
     public class ApartmentUnit
     {
-        // Properties
         public ApartmentId Id { get; private set; } = null!;
         public string? Description { get; set; }
         public string Unit { get; private set; }

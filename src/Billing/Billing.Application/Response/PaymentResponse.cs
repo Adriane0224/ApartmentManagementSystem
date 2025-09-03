@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Billing.Application.Response
 {
-    public sealed class PaymentResponse
+    public class PaymentResponse
     {
         public Guid Id { get; set; }
         public Guid InvoiceId { get; set; }
