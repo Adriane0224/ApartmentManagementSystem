@@ -12,8 +12,8 @@ using Property.Infrastructure.Data;
 namespace Property.Infrastructure.Migrations
 {
     [DbContext(typeof(ApartmentDbContext))]
-    [Migration("20250902101904_AddUnitOwnerView")]
-    partial class AddUnitOwnerView
+    [Migration("20250903102356_ApartmentInitialMigration")]
+    partial class ApartmentInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,7 +79,7 @@ namespace Property.Infrastructure.Migrations
 
                     b.HasKey("UnitId");
 
-                    b.ToTable("UnitOwnerView", "Apartment");
+                    b.ToTable("UnitOwners", "Apartment");
                 });
 #pragma warning restore 612, 618
         }

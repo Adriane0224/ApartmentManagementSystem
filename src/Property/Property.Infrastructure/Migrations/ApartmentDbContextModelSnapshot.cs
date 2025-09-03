@@ -76,7 +76,7 @@ namespace Property.Infrastructure.Migrations
 
                     b.HasKey("UnitId");
 
-                    b.ToTable("UnitOwnerView", "Apartment");
+                    b.ToTable("UnitOwners", "Apartment");
                 });
 #pragma warning restore 612, 618
         }
