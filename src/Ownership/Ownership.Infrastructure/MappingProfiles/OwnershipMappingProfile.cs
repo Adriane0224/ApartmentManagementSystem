@@ -10,6 +10,7 @@ namespace Ownership.Infrastructure.MappingProfiles
         {
             CreateMap<Owner, OwnerResponse>();
             CreateMap<OwnerUnit, OwnerUnitResponse>();
+
         }
     }
 }

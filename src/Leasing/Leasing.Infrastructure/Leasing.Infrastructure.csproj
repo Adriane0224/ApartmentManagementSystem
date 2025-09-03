@@ -18,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Property\Property.Domain\Property.Domain.csproj" />
+    <ProjectReference Include="..\..\Property\Property.Infrastructure\Property.Infrastructure.csproj" />
     <ProjectReference Include="..\Leasing.Application\Leasing.Application.csproj" />
     <ProjectReference Include="..\Leasing.Domain\Leasing.Domain.csproj" />
   </ItemGroup>

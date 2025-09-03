@@ -18,6 +18,9 @@ namespace Leasing.Application.Response
         public decimal SecurityDeposit { get; set; }
         public string Status { get; set; } = "Active";
 
+        public string? Unit { get; set; }
+        public int? Floor { get; set; }
+
         // Filled by queries; omitted when null so existing clients don’t break
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public TenantResponse? Tenant { get; set; }

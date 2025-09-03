@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Errors\" />
-    <Folder Include="EventHandler\" />
-    <Folder Include="Request\" />
   </ItemGroup>
 
   <ItemGroup>

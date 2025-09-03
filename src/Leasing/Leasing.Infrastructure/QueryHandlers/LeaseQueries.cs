@@ -1,8 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Leasing.Application.Queries;
 using Leasing.Application.Response;
@@ -10,6 +6,13 @@ using Leasing.Domain.Entities;
 using Leasing.Domain.ValueObject;
 using Leasing.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Property.Domain.ValueObject;
+using Property.Infrastructure.Data;
+using System.Collections.Concurrent;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
+using Property.Domain.ValueObject;
 
 namespace Leasing.Infrastructure.QueryHandlers
 {
@@ -21,21 +24,32 @@ namespace Leasing.Infrastructure.QueryHandlers
         public string? Phone { get; set; }
     }
 
+    // 👇 helper for apartment enrichment (no public exposure)
+    file sealed class AptBrief
+    {
+        public Guid Id { get; init; }
+        public string Unit { get; init; } = null!;
+        public int Floor { get; init; }
+    }
+
     public class LeaseQueries : ILeaseQueries
     {
         private readonly LeasingDbContext _db;
+        private readonly ApartmentDbContext _property;   // 👈 inject property context
         private readonly IMapper _mapper;
         private readonly IHttpClientFactory _http;
 
-        public LeaseQueries(LeasingDbContext db, IMapper mapper, IHttpClientFactory http)
+        public LeaseQueries(LeasingDbContext db, ApartmentDbContext property, IMapper mapper, IHttpClientFactory http)
         {
             _db = db;
+            _property = property;                         // 👈 store it
             _mapper = mapper;
             _http = http;
         }
 
         public async Task<LeaseResponse?> GetByIdAsync(Guid id, CancellationToken ct)
         {
+            // base lease dto via AutoMapper (no Unit/Floor yet)
             var dto = await _db.Leases.AsNoTracking()
                 .Where(l => l.Id == new LeaseId(id))
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
@@ -43,6 +57,19 @@ namespace Leasing.Infrastructure.QueryHandlers
 
             if (dto is null) return null;
 
+            // 👇 enrich with apartment
+            var apt = await _property.Apartments.AsNoTracking()
+            .Where(a => a.Id == new ApartmentId(dto.ApartmentId))   // ✅ VO comparison
+            .Select(a => new AptBrief { Id = a.Id.Value, Unit = a.Unit, Floor = a.Floor })
+            .FirstOrDefaultAsync(ct);
+
+            if (apt is not null)
+            {
+                dto.Unit = apt.Unit;
+                dto.Floor = apt.Floor;
+            }
+
+            // keep your tenant enrichment
             dto.Tenant = await FetchTenantAsync(dto.TenantId, ct);
             return dto;
         }
@@ -54,6 +81,7 @@ namespace Leasing.Infrastructure.QueryHandlers
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(ct);
 
+            await EnrichApartmentsAsync(list, ct); // 👈 add
             await EnrichTenantsAsync(list, ct);
             return list;
         }
@@ -65,8 +93,33 @@ namespace Leasing.Infrastructure.QueryHandlers
                 .ProjectTo<LeaseResponse>(_mapper.ConfigurationProvider)
                 .ToListAsync(ct);
 
+            await EnrichApartmentsAsync(list, ct); // 👈 add
             await EnrichTenantsAsync(list, ct);
             return list;
+        }
+
+        // ---------------- enrichment helpers ----------------
+
+        private async Task EnrichApartmentsAsync(List<LeaseResponse> leases, CancellationToken ct)
+        {
+            if (leases.Count == 0) return;
+            var aptIds = leases.Select(x => x.ApartmentId).Distinct().ToArray();
+            //  convert to value objects so the types match a.Id (ApartmentId)
+            var idsVO = aptIds.Select(g => new ApartmentId(g)).ToArray();
+
+            var apts = await _property.Apartments.AsNoTracking()
+                .Where(a => idsVO.Contains(a.Id))
+                .Select(a => new { Id = a.Id.Value, a.Unit, a.Floor })
+                .ToListAsync(ct);
+
+            var map = apts.ToDictionary(a => a.Id);
+
+            foreach (var l in leases)
+                if (map.TryGetValue(l.ApartmentId, out var a))
+                {
+                    l.Unit = a.Unit;
+                    l.Floor = a.Floor;
+                }
         }
 
         private async Task EnrichTenantsAsync(List<LeaseResponse> leases, CancellationToken ct)
@@ -86,7 +139,6 @@ namespace Leasing.Infrastructure.QueryHandlers
             var client = _http.CreateClient("TenantApi");
             try
             {
-                // directory route to get the details of tenant
                 var t = await client.GetFromJsonAsync<TenantWireDto>($"/api/tenant/getById/{tenantId}", ct);
                 return t is null ? null : new TenantResponse { Id = t.Id, Name = t.Name, Email = t.Email, Phone = t.Phone };
             }
