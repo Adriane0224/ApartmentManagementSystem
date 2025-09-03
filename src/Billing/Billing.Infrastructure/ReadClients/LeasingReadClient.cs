@@ -3,7 +3,7 @@ using Billing.Domain.Ports;
 
 namespace Billing.Infrastructure.ReadClients
 {
-    public sealed class LeasingReadClient : ILeasingReadPort
+    public class LeasingReadClient : ILeasingReadPort
     {
         private readonly HttpClient _http;
         public LeasingReadClient(HttpClient http) => _http = http;

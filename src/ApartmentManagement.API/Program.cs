@@ -11,6 +11,10 @@ using Billing.Application;
 using Property.Infrastructure;
 using Property.Infrastructure.MappingProfiles;
 using Scalar.AspNetCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Ownership.Infrastructure.MappingProfiles;
+using Ownership.Infrastructure;
+using Ownership.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +29,15 @@ builder.Services.AddMediatR(cfg =>
     //cfg.RegisterServicesFromAssembly(typeof(Property.Application.AssemblyReference).Assembly);
     cfg.RegisterServicesFromAssembly(typeof(Directory.Application.AssemblyReference).Assembly);
     cfg.RegisterServicesFromAssembly(typeof(Billing.Application.AssemblyReference).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Ownership.Application.AssemblyReference).Assembly);
+    cfg.RegisterServicesFromAssembly(
+        typeof(Property.Infrastructure.EventHandlers.OwnershipEventsHandler).Assembly);
+
 });
+//Ownership
+builder.Services.AddOwnershipApplication();
+builder.Services.AddOwnershipInfrastructure(builder.Configuration);
+
 
 //Leasing
 builder.Services.AddLeasingApplication();
@@ -39,23 +51,21 @@ builder.Services.AddApartmentInfrastructure(builder.Configuration);
 builder.Services.AddBillingApplication();
 builder.Services.AddBillingInfrastructure(builder.Configuration);
 
+//Directory
+builder.Services.AddDirectoryApplication();
+builder.Services.AddDirectoryInfrastructure(builder.Configuration);
+
 builder.Services.AddAutoMapper(cfg =>
 {
    cfg.AddMaps(typeof(ApartmentMappingProfile).Assembly);
     cfg.AddMaps(typeof(LeaseMappingProfile).Assembly);
     cfg.AddMaps(typeof(TenantMappingProfile).Assembly);
     cfg.AddMaps(typeof(BillingMappingProfile).Assembly);
+    cfg.AddMaps(typeof(OwnershipMappingProfile).Assembly);
 });
-
-//Directory
-builder.Services.AddDirectoryApplication();
-builder.Services.AddDirectoryInfrastructure(builder.Configuration);
-
 
 builder.Services.AddScoped<IEventBus, EventBus>();
 builder.Services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
-
-
 
 var app = builder.Build();
 

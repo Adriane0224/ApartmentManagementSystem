@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR.NotificationPublishers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace Billing.Domain.Ports
         public Guid Id { get; set; }
         public string? UnitNumber { get; set; }
         public int? Floor { get; set; }
+        
     }
 }

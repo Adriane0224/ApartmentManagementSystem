@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <Folder Include="Migrations\" />
+    <Folder Include="ReadClients\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
@@ -17,13 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Ownership\Ownership.Domain\Ownership.Domain.csproj" />
-    <ProjectReference Include="..\Property.Application\Property.Application.csproj" />
-    <ProjectReference Include="..\Property.Domain\Property.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\Ownership.Application\Ownership.Application.csproj" />
+    <ProjectReference Include="..\Ownership.Domain\Ownership.Domain.csproj" />
   </ItemGroup>
 
 </Project>

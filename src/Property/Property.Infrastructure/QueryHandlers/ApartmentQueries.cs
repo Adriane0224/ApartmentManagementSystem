@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Property.Application.Queries;
 using Property.Application.Response;
-using Property.Domain.Entities;
 using Property.Domain.ValueObject;
 using Property.Infrastructure.Data;
 using static Property.Domain.Entities.ApartmentUnit;
@@ -13,71 +10,103 @@ namespace Property.Infrastructure.QueryHandlers
     public class ApartmentQueries : IApartmentQueries
     {
         private readonly ApartmentDbContext _context;
-        private readonly IMapper _mapper;
 
-        public ApartmentQueries(ApartmentDbContext context, IMapper mapper)
+        public ApartmentQueries(ApartmentDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
+        private async Task<List<ApartmentResponse>> ProjectWithOwnerAsync(
+            IQueryable<Property.Domain.Entities.ApartmentUnit> source,
+            CancellationToken ct = default)
+        {
+            var aps = await source
+                .AsNoTracking()
+                .Select(a => new
+                {
+                    Id = a.Id.Value, 
+                    a.Unit,
+                    a.Floor,
+                    a.Status,
+                    a.Description
+                })
+                .ToListAsync(ct);
 
+            if (aps.Count == 0) return new List<ApartmentResponse>();
+
+            var unitIds = aps.Select(x => x.Id).Distinct().ToList();
+
+            var owners = await _context.UnitOwners
+                .AsNoTracking()
+                .Where(u => unitIds.Contains(u.UnitId))
+                .ToListAsync(ct);
+
+            var ownerMap = owners.ToDictionary(o => o.UnitId, o => o);
+            var result = new List<ApartmentResponse>(aps.Count);
+            foreach (var x in aps)
+            {
+                ownerMap.TryGetValue(x.Id, out var o);
+
+                result.Add(new ApartmentResponse
+                {
+                    Id = x.Id,
+                    Unit = x.Unit,
+                    Floor = x.Floor,
+                    Status = x.Status.ToString(),
+                    Description = x.Description,
+                    Owner = o == null ? null : new OwnerBrief
+                    {
+                        Id = o.OwnerId,
+                        Name = o.Name,
+                        Email = o.Email,
+                        Phone = o.Phone
+                    }
+                });
+            }
+            return result;
+        }
         public async Task<List<ApartmentResponse>> GetAllOccupiedApartmentsAsync()
         {
-            return await _context.Apartments
-            .Where(a => a.Status == UnitStatus.Occupied)
-            .ProjectTo<ApartmentResponse>(_mapper.ConfigurationProvider)
-            .ToListAsync();
-
+            var q = _context.Apartments.Where(a => a.Status == UnitStatus.Occupied);
+            return await ProjectWithOwnerAsync(q);
         }
 
         public async Task<List<ApartmentResponse>> GetAllApartmentsAsync()
         {
-           return await _context.Apartments.ProjectTo<ApartmentResponse>(_mapper.ConfigurationProvider).ToListAsync();
+            return await ProjectWithOwnerAsync(_context.Apartments);
         }
 
         public async Task<List<ApartmentResponse>> GetAllUnderMaintenanceApartments()
         {
-            return await _context.Apartments
-            .Where(a => a.Status == UnitStatus.Maintenance)
-            .ProjectTo<ApartmentResponse>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            var q = _context.Apartments.Where(a => a.Status == UnitStatus.Maintenance);
+            return await ProjectWithOwnerAsync(q);
         }
 
         public async Task<List<ApartmentResponse>> GetAllVacantApartmentsAsync()
         {
-            return await _context.Apartments
-                .Where(a => a.Status == ApartmentUnit.UnitStatus.Available)
-                .ProjectTo<ApartmentResponse>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            var q = _context.Apartments.Where(a => a.Status == UnitStatus.Available);
+            return await ProjectWithOwnerAsync(q);
         }
 
         public async Task<ApartmentResponse?> GetApartmentByIdAsync(string? unit)
         {
-            var apartment = await _context.Apartments.Where(u => u.Unit == unit).FirstOrDefaultAsync();
-            if (apartment == null)
-            {
-                return null;
-            }
-            return _mapper.Map<ApartmentResponse>(apartment);
+            if (string.IsNullOrWhiteSpace(unit)) return null;
+
+            var q = _context.Apartments.Where(a => a.Unit == unit);
+            var list = await ProjectWithOwnerAsync(q);
+            return list.FirstOrDefault();
         }
 
-        public Task<List<ApartmentResponse>> GetAllAvailableApartments()
+        public async Task<List<ApartmentResponse>> GetAllAvailableApartments()
         {
-            var apartments = _context.Apartments.Where(a => a.Status == UnitStatus.Available).ToList();
-            if (apartments == null)
-            {
-                return Task.FromResult(new List<ApartmentResponse>());
-            }
-            return Task.FromResult(_mapper.Map<List<ApartmentResponse>>(apartments));
+            var q = _context.Apartments.Where(a => a.Status == UnitStatus.Available);
+            return await ProjectWithOwnerAsync(q);
         }
 
         public async Task<ApartmentResponse?> GetApartmentByIdAsync(Guid id)
         {
-            var entity = await _context.Apartments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == new ApartmentId(id));
-
-            return entity is null ? null : _mapper.Map<ApartmentResponse>(entity);
+            var q = _context.Apartments.Where(a => a.Id == new ApartmentId(id));
+            var list = await ProjectWithOwnerAsync(q);
+            return list.FirstOrDefault();
         }
     }
 }

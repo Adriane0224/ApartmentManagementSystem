@@ -20,7 +20,7 @@ namespace Property.Application.CommandHandler
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<Result<ApartmentResponse>> AddApartmentAsync(string unit, int floor, CancellationToken cancellationToken)
+        public async Task<Result<ApartmentResponse>> AddApartmentAsync(string unit, int floor, string description, CancellationToken cancellationToken)
         {
             // Check if the unit already exists
             List<ApartmentUnit> apartments = await _unitOfWork.Apartments.GetAllAsync();
@@ -28,7 +28,7 @@ namespace Property.Application.CommandHandler
             {
                 return Result.Fail(new ApartmentError($"Apartment unit '{unit}' already exists."));
             }
-            ApartmentUnit apartment = ApartmentUnit.Create(unit, floor);
+            ApartmentUnit apartment = ApartmentUnit.Create(unit, floor, description);
             await _unitOfWork.Apartments.AddAsync(apartment, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Result.Ok(_mapper.Map<ApartmentResponse>(apartment));

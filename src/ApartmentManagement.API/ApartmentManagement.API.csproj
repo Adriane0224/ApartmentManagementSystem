@@ -36,6 +36,10 @@
     <ProjectReference Include="..\Leasing\Leasing.Application\Leasing.Application.csproj" />
     <ProjectReference Include="..\Leasing\Leasing.Controllers\Leasing.Controllers.csproj" />
     <ProjectReference Include="..\Leasing\Leasing.Infrastructure\Leasing.Infrastructure.csproj" />
+    <ProjectReference Include="..\Ownership\Ownership.Application\Ownership.Application.csproj" />
+    <ProjectReference Include="..\Ownership\Ownership.Controller\Ownership.Controller.csproj" />
+    <ProjectReference Include="..\Ownership\Ownership.Domain\Ownership.Domain.csproj" />
+    <ProjectReference Include="..\Ownership\Ownership.Infrastructure\Ownership.Infrastructure.csproj" />
     <ProjectReference Include="..\Property\Property.Controller\Property.Controller.csproj" />
     <ProjectReference Include="..\Property\Property.Infrastructure\Property.Infrastructure.csproj" />
   </ItemGroup>
