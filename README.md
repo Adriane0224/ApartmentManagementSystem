@@ -1,5 +1,5 @@
-Update-Database -Context ApartmentDbContext
-Update-Database -Context BillingDbContext
-Update-Database -Context DirectoryDbContext
-Update-Database -Context LeasingDbContext
-Update-Database -Context OwnershipDbContext
+Update-Database -Context ApartmentDbContext <br>
+Update-Database -Context BillingDbContext <br>
+Update-Database -Context DirectoryDbContext <br>
+Update-Database -Context LeasingDbContext <br>
+Update-Database -Context OwnershipDbContext <br>
